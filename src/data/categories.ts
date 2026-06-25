@@ -28,8 +28,8 @@ export const CATEGORIES: CategoryDef[] = [
     label: 'Notes de prix',
     short: 'Prix',
     icon: Tag,
-    from: '#FD2F33',
-    to: '#D81620',
+    from: '#E11D24',
+    to: '#B5141A',
     hint: 'Grilles tarifaires, financement, valeurs de reprise',
   },
   {
