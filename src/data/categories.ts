@@ -28,8 +28,8 @@ export const CATEGORIES: CategoryDef[] = [
     label: 'Notes de prix',
     short: 'Prix',
     icon: Tag,
-    from: '#E2001A',
-    to: '#B30015',
+    from: '#FD2F33',
+    to: '#D81620',
     hint: 'Grilles tarifaires, financement, valeurs de reprise',
   },
   {
@@ -101,14 +101,14 @@ export const CATEGORY_MAP: Record<CategoryId, CategoryDef> = Object.fromEntries(
   CATEGORIES.map((c) => [c.id, c]),
 ) as Record<CategoryId, CategoryDef>
 
-/** MG Maroc model line-up used for tagging/filtering documents. */
+/** Gamme MG Maroc (calée sur mg-maroc.com). */
 export const MG_MODELS = [
   'MG3',
+  'MG3 Hybrid+',
   'MG5',
   'MG ZS',
+  'MG ZS Hybrid+',
   'MG HS',
-  'MG4 EV',
-  'MG Marvel R',
-  'MG RX8',
-  'MG One',
+  'MG HS Hybrid+',
+  'MG Cyberster',
 ] as const

@@ -95,7 +95,7 @@ export default function UploadModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => !busy && onClose()}
-          className="fixed inset-0 z-50 flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
+          className="fixed inset-0 z-50 flex items-end justify-center bg-mg-ink/40 backdrop-blur-sm sm:items-center"
         >
           <motion.div
             initial={{ y: 40, opacity: 0, scale: 0.98 }}
@@ -103,14 +103,14 @@ export default function UploadModal({
             exit={{ y: 40, opacity: 0, scale: 0.98 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-mg-ink sm:rounded-3xl"
+            className="flex max-h-[92vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-mg-line bg-white shadow-2xl sm:rounded-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-mg-line px-6 py-4">
-              <h3 className="text-lg font-bold">Ajouter des documents</h3>
+              <h3 className="text-lg font-bold text-mg-ink">Ajouter des documents</h3>
               <button
                 onClick={() => !busy && onClose()}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink hover:bg-mg-line"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -118,7 +118,7 @@ export default function UploadModal({
 
             <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5">
               {/* Mode tabs */}
-              <div className="mb-5 inline-flex rounded-xl border border-mg-line bg-mg-panel p-1">
+              <div className="mb-5 inline-flex rounded-xl border border-mg-line bg-mg-wash p-1">
                 <Tab active={mode === 'files'} onClick={() => setMode('files')} icon={<UploadCloud className="h-4 w-4" />}>
                   Fichiers
                 </Tab>
@@ -144,11 +144,11 @@ export default function UploadModal({
                     onClick={() => inputRef.current?.click()}
                     className={clsx(
                       'flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed px-6 py-10 text-center transition-colors',
-                      dragOver ? 'border-mg-red bg-mg-red/5' : 'border-white/15 hover:border-white/30',
+                      dragOver ? 'border-mg-red bg-mg-red-wash' : 'border-mg-line hover:border-mg-ink/30',
                     )}
                   >
                     <UploadCloud className={clsx('h-9 w-9', dragOver ? 'text-mg-red' : 'text-mg-mute')} />
-                    <p className="mt-3 text-sm font-medium">
+                    <p className="mt-3 text-sm font-medium text-mg-ink">
                       Glissez vos fichiers ici ou <span className="text-mg-red">parcourez</span>
                     </p>
                     <p className="mt-1 text-xs text-mg-mute">PDF, images, vidéos — plusieurs fichiers possibles</p>
@@ -165,8 +165,8 @@ export default function UploadModal({
                   {picked.length > 0 && (
                     <div className="mt-4 space-y-2">
                       {picked.map((p, i) => (
-                        <div key={i} className="flex items-center gap-3 rounded-xl border border-mg-line bg-mg-panel p-2.5">
-                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/[0.05] text-mg-mute">
+                        <div key={i} className="flex items-center gap-3 rounded-xl border border-mg-line bg-mg-wash p-2.5">
+                          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white text-mg-mute ring-1 ring-mg-line">
                             <FileIcon className="h-4 w-4" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -177,7 +177,7 @@ export default function UploadModal({
                                   prev.map((x, j) => (j === i ? { ...x, title: e.target.value } : x)),
                                 )
                               }
-                              className="w-full bg-transparent text-sm font-medium outline-none"
+                              className="w-full bg-transparent text-sm font-medium text-mg-ink outline-none"
                             />
                             <div className="text-[11px] text-mg-mute">
                               {inferKind(p.file)} · {humanSize(p.file.size)}
@@ -185,7 +185,7 @@ export default function UploadModal({
                           </div>
                           <button
                             onClick={() => setPicked((prev) => prev.filter((_, j) => j !== i))}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-mg-mute hover:bg-white/[0.06] hover:text-white"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-mg-mute hover:bg-white hover:text-mg-red"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
@@ -208,7 +208,7 @@ export default function UploadModal({
                     <input
                       value={linkTitle}
                       onChange={(e) => setLinkTitle(e.target.value)}
-                      placeholder="Ex. Essai dynamique MG4 EV"
+                      placeholder="Ex. Essai dynamique MG Cyberster"
                       className="input"
                     />
                   </Field>
@@ -230,7 +230,7 @@ export default function UploadModal({
                         onClick={() => setCategory(c.id)}
                         className={clsx(
                           'flex flex-col items-center gap-1.5 rounded-xl border p-3 text-center transition-all',
-                          on ? 'border-transparent text-white' : 'border-mg-line text-white/60 hover:text-white',
+                          on ? 'border-transparent text-white' : 'border-mg-line text-mg-ink-soft hover:text-mg-ink',
                         )}
                         style={on ? { background: `linear-gradient(135deg, ${c.from}, ${c.to})` } : undefined}
                       >
@@ -267,7 +267,7 @@ export default function UploadModal({
             {/* Footer */}
             <div className="border-t border-mg-line px-6 py-4">
               {busy && mode === 'files' && (
-                <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-white/[0.06]">
+                <div className="mb-3 h-1.5 w-full overflow-hidden rounded-full bg-mg-wash">
                   <motion.div
                     className="h-full bg-mg-grad"
                     initial={{ width: 0 }}
@@ -320,7 +320,7 @@ function Tab({
       onClick={onClick}
       className={clsx(
         'flex items-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium transition-colors',
-        active ? 'bg-white/[0.10] text-white' : 'text-white/55 hover:text-white',
+        active ? 'bg-white text-mg-ink shadow-sm' : 'text-mg-ink-soft hover:text-mg-ink',
       )}
     >
       {icon}

@@ -44,14 +44,14 @@ export default function MarketingDashboard({ onExit }: { onExit: () => void }) {
   }
 
   return (
-    <div className="min-h-screen bg-mg-black">
+    <div className="min-h-screen bg-mg-base">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-mg-line bg-mg-black/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-mg-line bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3.5">
           <div className="flex items-center gap-4">
             <button
               onClick={onExit}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink transition-colors hover:bg-mg-line"
               title="Retour"
             >
               <ArrowLeft className="h-4 w-4" />
@@ -77,11 +77,12 @@ export default function MarketingDashboard({ onExit }: { onExit: () => void }) {
         {/* Heading */}
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            <div className="overline">Source unique du réseau</div>
+            <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-mg-ink sm:text-3xl">
               Bibliothèque documentaire
             </h1>
-            <p className="mt-1 text-sm text-mg-mute">
-              {docs.length} document{docs.length > 1 ? 's' : ''} · source unique du réseau MG Maroc
+            <p className="mt-1 text-sm text-mg-ink-soft">
+              {docs.length} document{docs.length > 1 ? 's' : ''} · MG Maroc
             </p>
           </div>
           <div className="relative">
@@ -104,10 +105,7 @@ export default function MarketingDashboard({ onExit }: { onExit: () => void }) {
         {visible.length === 0 ? (
           <EmptyState onAdd={() => openUpload(filter !== 'all' ? filter : undefined)} hasDocs={docs.length > 0} />
         ) : (
-          <motion.div
-            layout
-            className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4"
-          >
+          <motion.div layout className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
             <AnimatePresence mode="popLayout">
               {visible.map((doc, i) => (
                 <DocCard
@@ -158,14 +156,14 @@ export default function MarketingDashboard({ onExit }: { onExit: () => void }) {
 
 function EmptyState({ onAdd, hasDocs }: { onAdd: () => void; hasDocs: boolean }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 py-20 text-center">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white/[0.04]">
+    <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-mg-line bg-mg-wash/50 py-20 text-center">
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-card">
         <FolderOpen className="h-7 w-7 text-mg-mute" />
       </div>
-      <h3 className="mt-4 text-lg font-semibold">
+      <h3 className="mt-4 text-lg font-semibold text-mg-ink">
         {hasDocs ? 'Aucun document dans cette catégorie' : 'Votre bibliothèque est vide'}
       </h3>
-      <p className="mt-1 max-w-sm text-sm text-mg-mute">
+      <p className="mt-1 max-w-sm text-sm text-mg-ink-soft">
         Déposez vos premiers supports : notes de prix, fiches techniques, photos, vidéos…
       </p>
       <button onClick={onAdd} className="btn-primary mt-5">

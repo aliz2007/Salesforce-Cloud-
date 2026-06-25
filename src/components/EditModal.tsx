@@ -47,7 +47,7 @@ export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClo
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => !busy && onClose()}
-          className="fixed inset-0 z-[55] flex items-end justify-center bg-black/70 backdrop-blur-sm sm:items-center"
+          className="fixed inset-0 z-[55] flex items-end justify-center bg-mg-ink/40 backdrop-blur-sm sm:items-center"
         >
           <motion.div
             initial={{ y: 30, opacity: 0 }}
@@ -55,13 +55,13 @@ export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClo
             exit={{ y: 30, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 320, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-lg rounded-t-3xl border border-white/10 bg-mg-ink p-6 sm:rounded-3xl"
+            className="w-full max-w-lg rounded-t-3xl border border-mg-line bg-white p-6 shadow-2xl sm:rounded-2xl"
           >
             <div className="mb-5 flex items-center justify-between">
-              <h3 className="text-lg font-bold">Modifier le document</h3>
+              <h3 className="text-lg font-bold text-mg-ink">Modifier le document</h3>
               <button
                 onClick={() => !busy && onClose()}
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12]"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink transition-colors hover:bg-mg-line"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -83,7 +83,7 @@ export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClo
                       onClick={() => setCategory(c.id)}
                       className={clsx(
                         'rounded-full border px-3 py-1.5 text-xs font-medium transition-all',
-                        on ? 'border-transparent text-white' : 'border-mg-line text-white/60 hover:text-white',
+                        on ? 'border-transparent text-white' : 'border-mg-line text-mg-ink-soft hover:text-mg-ink',
                       )}
                       style={on ? { background: `linear-gradient(135deg, ${c.from}, ${c.to})` } : undefined}
                     >

@@ -4,16 +4,21 @@ export default {
   theme: {
     extend: {
       colors: {
-        // MG brand red (official Pantone 485C #CD1316) — deep, premium
+        // ── MG Maroc, calé sur mg-maroc.com (thème clair) ──
         mg: {
-          red: '#CD1316',
-          'red-dark': '#9E0E12',
-          'red-light': '#E63A3D',
-          black: '#0a0a0b',
-          ink: '#121214',
-          panel: '#17171a',
-          line: '#26262b',
-          mute: '#8a8a93',
+          red: '#FD2F33', // accent du site
+          'red-deep': '#CD1316', // rouge MG officiel (Pantone 485C) — variante plus profonde
+          'red-dark': '#D81620',
+          'red-light': '#FF5C5F',
+          'red-wash': '#FFF1F1', // fond rouge très clair (états sélectionnés)
+          ink: '#1C1917', // texte principal (noir chaud)
+          'ink-soft': '#57534D', // texte secondaire
+          mute: '#8A857E', // texte atténué
+          line: '#E7E4E0', // bordures (gris chaud)
+          panel: '#FFFFFF', // surface des cartes
+          wash: '#F6F5F3', // fond de section subtil
+          base: '#FFFFFF', // fond de page
+          stage: '#0E0E10', // backdrop sombre pour la présentation média
         },
       },
       fontFamily: {
@@ -27,26 +32,24 @@ export default {
           'sans-serif',
         ],
       },
+      letterSpacing: {
+        mg: '0.22em', // tracking large facon MG ("D É C O U V R E Z")
+      },
       boxShadow: {
-        glow: '0 0 0 1px rgba(205,19,22,0.4), 0 8px 40px -8px rgba(205,19,22,0.5)',
-        card: '0 1px 0 0 rgba(255,255,255,0.04) inset, 0 20px 50px -24px rgba(0,0,0,0.8)',
+        glow: '0 1px 0 0 rgba(255,255,255,0.4) inset, 0 10px 30px -10px rgba(253,47,51,0.5)',
+        card: '0 1px 2px rgba(28,25,23,0.04), 0 14px 34px -16px rgba(28,25,23,0.22)',
+        'card-hover': '0 2px 4px rgba(28,25,23,0.05), 0 24px 50px -20px rgba(28,25,23,0.30)',
       },
       backgroundImage: {
-        'mg-grad': 'linear-gradient(135deg, #CD1316 0%, #9E0E12 100%)',
-        'panel-grad': 'linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0) 100%)',
+        'mg-grad': 'linear-gradient(135deg, #FD2F33 0%, #D81620 100%)',
       },
       keyframes: {
         shimmer: {
           '100%': { transform: 'translateX(100%)' },
         },
-        'pulse-ring': {
-          '0%': { transform: 'scale(0.8)', opacity: '0.6' },
-          '100%': { transform: 'scale(2.2)', opacity: '0' },
-        },
       },
       animation: {
         shimmer: 'shimmer 1.6s infinite',
-        'pulse-ring': 'pulse-ring 2.2s ease-out infinite',
       },
     },
   },

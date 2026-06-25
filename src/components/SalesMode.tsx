@@ -45,8 +45,8 @@ export default function SalesMode({ onExit }: { onExit: () => void }) {
 
   if (selectedDocs.length === 0) {
     return (
-      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-mg-black">
-        <p className="text-mg-mute">Aucun document sélectionné.</p>
+      <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-mg-stage">
+        <p className="text-white/55">Aucun document sélectionné.</p>
         <button onClick={onExit} className="btn-primary mt-4">
           Retour
         </button>
@@ -55,7 +55,7 @@ export default function SalesMode({ onExit }: { onExit: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-mg-black">
+    <div className="fixed inset-0 z-50 overflow-hidden bg-mg-stage">
       <AnimatePresence mode="wait">
         {phase === 'intro' && <Intro key="intro" onSkip={() => setPhase('menu')} />}
 
@@ -89,7 +89,7 @@ function Intro({ onSkip }: { onSkip: () => void }) {
       exit={{ opacity: 0, scale: 1.05 }}
       transition={{ duration: 0.6 }}
       onClick={onSkip}
-      className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-mg-black"
+      className="absolute inset-0 flex cursor-pointer flex-col items-center justify-center bg-mg-stage"
     >
       <motion.div
         className="pointer-events-none absolute h-[420px] w-[420px] rounded-full bg-mg-red/25 blur-[120px]"
@@ -113,7 +113,7 @@ function Intro({ onSkip }: { onSkip: () => void }) {
         <div className="text-3xl font-extrabold tracking-tight">
           Sales <span className="text-mg-red">Mode</span>
         </div>
-        <div className="mt-2 text-sm uppercase tracking-[0.3em] text-mg-mute">MG Maroc</div>
+        <div className="mt-2 text-sm uppercase tracking-[0.3em] text-white/55">MG Maroc</div>
       </motion.div>
     </motion.div>
   )
@@ -170,7 +170,7 @@ function Menu({
             <h1 className="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl">
               Votre présentation
             </h1>
-            <p className="mt-2 text-mg-mute">
+            <p className="mt-2 text-white/55">
               {docs.length} support{docs.length > 1 ? 's' : ''} prêt{docs.length > 1 ? 's' : ''} ·
               choisissez par quoi commencer
             </p>
@@ -216,7 +216,7 @@ function Menu({
                   <h2 className="text-sm font-semibold uppercase tracking-wider text-white/80">
                     {g.cat.label}
                   </h2>
-                  <span className="text-xs text-mg-mute">{g.items.length}</span>
+                  <span className="text-xs text-white/55">{g.items.length}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
                   {g.items.map((d) => (
@@ -240,7 +240,7 @@ function MenuTile({ doc, onClick }: { doc: DocMeta; onClick: () => void }) {
       whileHover={{ y: -6, scale: 1.015 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: 'spring', stiffness: 380, damping: 26 }}
-      className="group relative aspect-[16/11] overflow-hidden rounded-2xl border border-white/10 bg-mg-panel text-left"
+      className="group relative aspect-[16/11] overflow-hidden rounded-2xl border border-white/10 bg-white/[0.05] text-left"
     >
       {thumb ? (
         <img src={thumb} alt={doc.title} className="h-full w-full object-cover" />
@@ -321,7 +321,7 @@ function Stage({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col bg-mg-black"
+      className="absolute inset-0 flex flex-col bg-mg-stage"
       onMouseMove={poke}
       onTouchStart={poke}
     >

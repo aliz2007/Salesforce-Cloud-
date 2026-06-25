@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
+    color-scheme: light;
   }
 
   * {
@@ -20,12 +20,11 @@
   }
 
   body {
-    @apply bg-mg-black text-white font-sans antialiased;
+    @apply bg-mg-base text-mg-ink font-sans antialiased;
     margin: 0;
     overflow-x: hidden;
   }
 
-  /* Refined scrollbar */
   ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -34,51 +33,50 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #2a2a30;
+    background: #d8d4cf;
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #3a3a42;
+    background: #c4bfb8;
     background-clip: padding-box;
   }
 }
 
 @layer components {
-  .glass {
-    @apply bg-white/[0.03] backdrop-blur-xl border border-white/[0.07];
-  }
-
   .panel {
-    @apply bg-mg-panel border border-mg-line rounded-2xl;
+    @apply bg-mg-panel border border-mg-line rounded-xl;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold
            transition-all duration-200 select-none active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none;
   }
   .btn-primary {
-    @apply btn bg-mg-grad text-white shadow-glow hover:brightness-110;
+    @apply btn bg-mg-grad text-white shadow-glow hover:brightness-105;
   }
   .btn-ghost {
-    @apply btn bg-white/[0.04] text-white/90 border border-white/[0.08] hover:bg-white/[0.08];
+    @apply btn bg-white text-mg-ink border border-mg-line hover:bg-mg-wash;
   }
-
-  .card-hover {
-    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-card;
+  .btn-dark {
+    @apply btn bg-mg-ink text-white hover:bg-mg-ink/90;
   }
 
   .input {
-    @apply w-full rounded-xl border border-mg-line bg-mg-panel px-3.5 py-2.5 text-sm text-white
-           outline-none transition-colors placeholder:text-mg-mute/70
-           focus:border-mg-red/60 focus:ring-2 focus:ring-mg-red/20;
+    @apply w-full rounded-lg border border-mg-line bg-white px-3.5 py-2.5 text-sm text-mg-ink
+           outline-none transition-colors placeholder:text-mg-mute
+           focus:border-mg-red focus:ring-2 focus:ring-mg-red/20;
   }
   select.input {
-    @apply appearance-none bg-mg-panel;
+    @apply appearance-none bg-white;
   }
 
-  /* Hide scrollbar but keep scroll */
+  /* MG-style overline: small, uppercase, wide tracking, red */
+  .overline {
+    @apply text-[11px] font-bold uppercase tracking-mg text-mg-red;
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }
@@ -88,10 +86,10 @@
   }
 }
 
-/* Subtle animated grain / vignette helpers */
+/* Subtle dotted grid for light surfaces */
 .bg-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 0);
-  background-size: 28px 28px;
+  background-image: radial-gradient(circle at 1px 1px, rgba(28, 25, 23, 0.06) 1px, transparent 0);
+  background-size: 26px 26px;
 }
 
 .text-balance {

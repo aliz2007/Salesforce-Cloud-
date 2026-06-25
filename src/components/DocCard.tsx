@@ -53,12 +53,12 @@ export default function DocCard({
       whileHover={{ y: -4 }}
       onClick={handleClick}
       className={clsx(
-        'group relative cursor-pointer overflow-hidden rounded-2xl border bg-mg-panel transition-colors',
-        selected ? 'border-mg-red shadow-glow' : 'border-mg-line hover:border-white/20',
+        'group relative cursor-pointer overflow-hidden rounded-2xl border bg-mg-panel shadow-card transition-all hover:shadow-card-hover',
+        selected ? 'border-mg-red ring-2 ring-mg-red/25' : 'border-mg-line',
       )}
     >
       {/* Thumbnail */}
-      <div className="relative aspect-[16/10] overflow-hidden bg-mg-ink">
+      <div className="relative aspect-[16/10] overflow-hidden bg-mg-wash">
         {thumb ? (
           <img
             src={thumb}
@@ -67,11 +67,8 @@ export default function DocCard({
             className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="h-full w-full animate-pulse bg-white/[0.04]" />
+          <div className="h-full w-full animate-pulse bg-black/[0.04]" />
         )}
-
-        {/* gradient scrim */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
 
         {/* kind chip */}
         <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-black/55 px-2.5 py-1 text-[11px] font-semibold text-white backdrop-blur">
@@ -83,13 +80,6 @@ export default function DocCard({
           {doc.kind === 'other' && 'Doc'}
         </div>
 
-        {/* category dot */}
-        <div
-          className="absolute right-3 top-3 h-2.5 w-2.5 rounded-full ring-2 ring-black/40"
-          style={{ background: cat.from }}
-          title={cat.label}
-        />
-
         {/* selection checkbox */}
         {selectable && (
           <div
@@ -97,7 +87,7 @@ export default function DocCard({
               'absolute bottom-3 right-3 flex h-7 w-7 items-center justify-center rounded-full border-2 transition-all',
               selected
                 ? 'border-mg-red bg-mg-red text-white'
-                : 'border-white/70 bg-black/30 text-transparent backdrop-blur group-hover:border-white',
+                : 'border-white bg-black/25 text-transparent backdrop-blur group-hover:bg-black/40',
             )}
           >
             <Check className="h-4 w-4" strokeWidth={3} />
@@ -107,7 +97,7 @@ export default function DocCard({
         {/* play overlay for video */}
         {doc.kind === 'video' && !selectable && (
           <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity group-hover:opacity-100">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-mg-red/90 shadow-glow">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-mg-red shadow-glow">
               <Play className="h-5 w-5 translate-x-[1px] text-white" fill="currentColor" />
             </div>
           </div>
@@ -117,16 +107,16 @@ export default function DocCard({
       {/* Meta */}
       <div className="p-3.5">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: cat.from }}>
+          <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: cat.from }}>
             {cat.short}
           </span>
           {doc.model && (
-            <span className="rounded bg-white/[0.06] px-1.5 py-0.5 text-[10px] font-medium text-white/70">
+            <span className="rounded bg-mg-wash px-1.5 py-0.5 text-[10px] font-semibold text-mg-ink-soft">
               {doc.model}
             </span>
           )}
         </div>
-        <h4 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-white">
+        <h4 className="mt-1 line-clamp-2 text-sm font-semibold leading-snug text-mg-ink">
           {doc.title}
         </h4>
       </div>
@@ -140,7 +130,7 @@ export default function DocCard({
                 e.stopPropagation()
                 onEdit(doc)
               }}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur transition-colors hover:bg-black/80"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/95 text-mg-ink shadow-sm ring-1 ring-mg-line transition-colors hover:bg-white"
               title="Modifier"
             >
               <Pencil className="h-4 w-4" />
@@ -152,7 +142,7 @@ export default function DocCard({
                 e.stopPropagation()
                 onDelete(doc)
               }}
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-black/55 text-white backdrop-blur transition-colors hover:bg-mg-red"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/95 text-mg-ink shadow-sm ring-1 ring-mg-line transition-colors hover:bg-mg-red hover:text-white"
               title="Supprimer"
             >
               <Trash2 className="h-4 w-4" />

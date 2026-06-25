@@ -41,24 +41,20 @@ export default function SalesBrowser({
   const allVisibleSelected = visible.length > 0 && visible.every((d) => isSelected(d.id))
 
   return (
-    <div className="min-h-screen bg-mg-black pb-32">
+    <div className="min-h-screen bg-mg-base pb-32">
       {/* Top bar */}
-      <header className="sticky top-0 z-30 border-b border-mg-line bg-mg-black/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-30 border-b border-mg-line bg-white/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3.5">
           <div className="flex items-center gap-4">
             <button
               onClick={onExit}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-white/[0.06] hover:bg-white/[0.12]"
+              className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink transition-colors hover:bg-mg-line"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
             <Wordmark subtitle="Espace Vendeur" />
           </div>
-          <button
-            onClick={onLaunch}
-            disabled={selectedDocs.length === 0}
-            className="btn-primary"
-          >
+          <button onClick={onLaunch} disabled={selectedDocs.length === 0} className="btn-primary">
             <Play className="h-4 w-4" fill="currentColor" />
             Sales Mode
             {selectedDocs.length > 0 && (
@@ -71,10 +67,11 @@ export default function SalesBrowser({
       <main className="mx-auto max-w-7xl px-5 py-7">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            <div className="overline">Espace Vendeur</div>
+            <h1 className="mt-1.5 text-2xl font-extrabold tracking-tight text-mg-ink sm:text-3xl">
               Préparez votre présentation
             </h1>
-            <p className="mt-1 text-sm text-mg-mute">
+            <p className="mt-1 text-sm text-mg-ink-soft">
               Sélectionnez les supports à présenter, puis lancez le Sales Mode plein écran.
             </p>
           </div>
@@ -121,7 +118,6 @@ export default function SalesBrowser({
         )}
       </main>
 
-      {/* Selection tray */}
       <SelectionTray
         docs={selectedDocs}
         onClear={clearSelection}
@@ -130,7 +126,6 @@ export default function SalesBrowser({
         visible={selectedIds.size > 0}
       />
 
-      {/* Preview (long-press / tap on thumbnail area opens; here via dedicated button) */}
       <Lightbox doc={preview} onClose={() => setPreview(null)} />
     </div>
   )
@@ -159,20 +154,24 @@ function SelectionTray({
           transition={{ type: 'spring', stiffness: 320, damping: 32 }}
           className="fixed inset-x-0 bottom-0 z-40 px-4 pb-4"
         >
-          <div className="mx-auto flex max-w-4xl items-center gap-3 rounded-2xl border border-white/10 bg-mg-ink/95 p-3 shadow-2xl backdrop-blur-xl">
-            <div className="hidden shrink-0 items-center gap-1 pl-1 sm:flex">
-              <Sparkles className="h-4 w-4 text-mg-red" />
-              <span className="text-sm font-semibold">{docs.length} sélectionné{docs.length > 1 ? 's' : ''}</span>
+          <div className="mx-auto flex max-w-4xl items-center gap-3 rounded-2xl bg-mg-ink p-3 text-white shadow-2xl ring-1 ring-black/5">
+            <div className="hidden shrink-0 items-center gap-1.5 pl-1 sm:flex">
+              <Sparkles className="h-4 w-4 text-mg-red-light" />
+              <span className="text-sm font-semibold">
+                {docs.length} sélectionné{docs.length > 1 ? 's' : ''}
+              </span>
             </div>
 
-            {/* mini thumbnails */}
             <div className="no-scrollbar flex min-w-0 flex-1 gap-2 overflow-x-auto">
               {docs.map((d) => (
                 <TrayThumb key={d.id} doc={d} onRemove={() => onRemove(d.id)} />
               ))}
             </div>
 
-            <button onClick={onClear} className="btn-ghost shrink-0 px-3">
+            <button
+              onClick={onClear}
+              className="btn shrink-0 bg-white/10 px-3 text-white hover:bg-white/20"
+            >
               Vider
             </button>
             <button onClick={onLaunch} className="btn-primary shrink-0">
@@ -189,11 +188,11 @@ function SelectionTray({
 function TrayThumb({ doc, onRemove }: { doc: DocMeta; onRemove: () => void }) {
   const thumb = useThumb(doc)
   return (
-    <div className="group relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-mg-panel ring-1 ring-white/10">
+    <div className="group relative h-12 w-16 shrink-0 overflow-hidden rounded-lg bg-white/10 ring-1 ring-white/15">
       {thumb ? (
         <img src={thumb} alt="" className="h-full w-full object-cover" />
       ) : (
-        <div className="h-full w-full bg-white/[0.05]" />
+        <div className="h-full w-full" />
       )}
       <button
         onClick={onRemove}

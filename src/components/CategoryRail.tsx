@@ -66,25 +66,26 @@ function Pill({
         'relative flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
         active
           ? 'border-transparent text-white'
-          : 'border-white/10 text-white/60 hover:border-white/20 hover:text-white',
+          : 'border-mg-line bg-white text-mg-ink-soft hover:border-mg-ink/25 hover:text-mg-ink',
       )}
     >
       {active && (
         <motion.div
           layoutId="catRailActive"
-          className="absolute inset-0 rounded-full bg-white/[0.10]"
-          style={color ? { boxShadow: `inset 0 0 0 1px ${color}66` } : undefined}
+          className="absolute inset-0 rounded-full bg-mg-ink"
           transition={{ type: 'spring', stiffness: 500, damping: 36 }}
         />
       )}
-      <span className="relative z-10 flex items-center gap-2" style={active && color ? { color } : undefined}>
-        {icon}
+      <span className="relative z-10 flex items-center gap-2">
+        <span style={!active && color ? { color } : undefined} className="flex items-center">
+          {icon}
+        </span>
         {label}
       </span>
       <span
         className={clsx(
           'relative z-10 rounded-full px-1.5 text-xs tabular-nums',
-          active ? 'bg-white/15 text-white' : 'bg-white/[0.06] text-white/50',
+          active ? 'bg-white/20 text-white' : 'bg-mg-wash text-mg-mute',
         )}
       >
         {count}

@@ -57,7 +57,7 @@ function Shell() {
 
 function Splash() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-mg-black">
+    <div className="flex min-h-screen items-center justify-center bg-mg-base">
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -65,12 +65,12 @@ function Splash() {
         className="flex flex-col items-center gap-4"
       >
         <motion.div
-          animate={{ rotate: [0, 0, 5, -5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          animate={{ y: [0, -6, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         >
           <MgBadge size={56} />
         </motion.div>
-        <div className="text-sm text-mg-mute">Chargement de l’espace MG…</div>
+        <div className="overline">Animés par la passion</div>
       </motion.div>
     </div>
   )
