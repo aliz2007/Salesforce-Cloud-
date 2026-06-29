@@ -3,6 +3,7 @@ import clsx from 'clsx'
 import { LayoutGrid } from 'lucide-react'
 import type { CategoryId } from '../types'
 import { CATEGORIES } from '../data/categories'
+import { springSoft, springSnappy } from '../motion'
 
 export type CategoryFilter = CategoryId | 'all'
 
@@ -60,10 +61,13 @@ function Pill({
   icon: React.ReactNode
 }) {
   return (
-    <button
+    <motion.button
       onClick={onClick}
+      whileHover={{ scale: 1.04 }}
+      whileTap={{ scale: 0.96 }}
+      transition={springSoft}
       className={clsx(
-        'relative flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
+        'group relative flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-colors',
         active
           ? 'border-transparent text-white'
           : 'border-mg-line bg-white text-mg-ink-soft hover:border-mg-ink/25 hover:text-mg-ink',
@@ -77,19 +81,26 @@ function Pill({
         />
       )}
       <span className="relative z-10 flex items-center gap-2">
-        <span style={!active && color ? { color } : undefined} className="flex items-center">
+        <span
+          style={!active && color ? { color } : undefined}
+          className="flex items-center transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:scale-110"
+        >
           {icon}
         </span>
         {label}
       </span>
-      <span
+      <motion.span
+        key={count}
+        initial={{ scale: 0.6, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={springSnappy}
         className={clsx(
           'relative z-10 rounded-full px-1.5 text-xs tabular-nums',
           active ? 'bg-white/20 text-white' : 'bg-mg-wash text-mg-mute',
         )}
       >
         {count}
-      </span>
-    </button>
+      </motion.span>
+    </motion.button>
   )
 }

@@ -1,27 +1,48 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import { X, ChevronLeft, ChevronRight, ArrowLeft, Play } from 'lucide-react'
+import { X, ChevronLeft, ChevronRight, ArrowLeft, Settings } from 'lucide-react'
 import type { DocMeta } from '../types'
 import { useStore } from '../context/StoreContext'
 import { CATEGORY_MAP } from '../data/categories'
 import { MgBadge } from './Brand'
-import { useThumb } from '../hooks'
+import { slideX, EASE } from '../motion'
+import {
+  SalesSettingsProvider,
+  useSalesSettings,
+} from '../context/SalesSettings'
+import SalesBackground from './sales/SalesBackground'
+import SettingsPanel from './sales/SettingsPanel'
+import { LAYOUTS } from './sales/layouts'
 import DocViewer from './DocViewer'
 
 type Phase = 'board' | 'stage'
 
+/**
+ * Personalisable Sales Mode. The vendeur sees a board of ONLY the selected
+ * files, can re-skin it (layout / theme / custom background), and taps a file
+ * to open it full-screen on a clean spotlight stage.
+ */
 export default function SalesMode({ onExit }: { onExit: () => void }) {
+  return (
+    <SalesSettingsProvider>
+      <SalesModeInner onExit={onExit} />
+    </SalesSettingsProvider>
+  )
+}
+
+function SalesModeInner({ onExit }: { onExit: () => void }) {
   const { selectedDocs } = useStore()
+  const { isLight } = useSalesSettings()
   const [phase, setPhase] = useState<Phase>('board')
   const [[index, dir], setIndex] = useState<[number, number]>([0, 0])
 
-  // Organise the selected files by name — the board is sorted alphabetically.
+  // The board is sorted alphabetically by title (French collation).
   const docs = useMemo(
     () => [...selectedDocs].sort((a, b) => a.title.localeCompare(b.title, 'fr')),
     [selectedDocs],
   )
 
-  const open = useCallback((i: number) => {
+  const openStage = useCallback((i: number) => {
     setIndex([i, 0])
     setPhase('stage')
   }, [])
@@ -48,10 +69,14 @@ export default function SalesMode({ onExit }: { onExit: () => void }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-mg-stage text-white">
+    <div
+      className={`fixed inset-0 z-50 overflow-hidden bg-mg-stage ${
+        isLight ? 'text-mg-ink' : 'text-white'
+      }`}
+    >
       <AnimatePresence mode="wait">
         {phase === 'board' && (
-          <Board key="board" docs={docs} onPick={open} onExit={onExit} />
+          <Board key="board" docs={docs} onPick={openStage} onExit={onExit} />
         )}
         {phase === 'stage' && (
           <Stage
@@ -69,7 +94,7 @@ export default function SalesMode({ onExit }: { onExit: () => void }) {
   )
 }
 
-/* ─────────────────────────── Bubble board ─────────────────────────── */
+/* ─────────────────────────── Board ─────────────────────────── */
 
 function Board({
   docs,
@@ -80,11 +105,23 @@ function Board({
   onPick: (i: number) => void
   onExit: () => void
 }) {
+  const { layout, isLight } = useSalesSettings()
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const { Component } = LAYOUTS[layout]
+
+  // Escape exits the board — unless the settings panel is open (it handles Esc).
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onExit()
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && !settingsOpen) onExit()
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [onExit])
+  }, [onExit, settingsOpen])
+
+  // Control buttons flip to dark-on-light when a light theme is active.
+  const ctlClass = isLight
+    ? 'flex items-center justify-center rounded-full border border-black/10 bg-black/[0.05] text-mg-ink transition-all duration-200 hover:bg-black/[0.1] active:scale-95'
+    : 'ctl'
 
   return (
     <motion.div
@@ -92,103 +129,58 @@ function Board({
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.4 }}
-      className="absolute inset-0 overflow-y-auto"
+      className="absolute inset-0 overflow-y-auto scroll-dark"
     >
-      {/* ambient backdrop — light, never competes with the bubbles */}
-      <div className="pointer-events-none fixed -top-44 left-1/2 h-[520px] w-[760px] -translate-x-1/2 rounded-full bg-mg-red/20 blur-[130px]" />
-      <div className="pointer-events-none fixed -bottom-40 left-[8%] h-[420px] w-[520px] rounded-full bg-mg-red/10 blur-[130px]" />
+      <SalesBackground />
 
-      {/* minimal chrome: brand mark + exit only */}
-      <div className="pointer-events-none fixed left-6 top-6 z-10 opacity-80">
+      {/* minimal chrome */}
+      <div className="pointer-events-none fixed left-6 top-6 z-20 opacity-80">
         <MgBadge size={34} />
       </div>
-      <button
-        onClick={onExit}
-        className="fixed right-6 top-6 z-10 flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] transition-colors hover:bg-white/[0.14]"
-        title="Quitter le Sales Mode (Échap)"
-      >
-        <X className="h-5 w-5" />
-      </button>
 
-      <div className="relative flex min-h-screen flex-wrap content-center items-center justify-center gap-x-8 gap-y-11 px-6 py-24 sm:gap-x-10">
-        {docs.map((doc, i) => (
-          <Bubble key={doc.id} doc={doc} index={i} onClick={() => onPick(i)} />
-        ))}
+      <div className="fixed right-6 top-6 z-20 flex items-center gap-2.5">
+        <button
+          type="button"
+          onClick={() => setSettingsOpen(true)}
+          className={`${ctlClass} h-11 w-11`}
+          aria-label="Personnaliser la présentation"
+          title="Personnaliser"
+        >
+          <Settings className="h-5 w-5" />
+        </button>
+        <button
+          type="button"
+          onClick={onExit}
+          className={`${ctlClass} h-11 w-11`}
+          aria-label="Quitter le Sales Mode"
+          title="Quitter (Échap)"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
+
+      {/* active layout — cross-fades/scales when the disposition changes */}
+      <div className="relative z-10 min-h-screen">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={layout}
+            initial={{ opacity: 0, scale: 0.985 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1.01 }}
+            transition={{ duration: 0.35, ease: EASE }}
+            className="min-h-screen"
+          >
+            <Component docs={docs} onPick={onPick} />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </motion.div>
   )
 }
 
-function Bubble({ doc, index, onClick }: { doc: DocMeta; index: number; onClick: () => void }) {
-  const thumb = useThumb(doc)
-  const cat = CATEGORY_MAP[doc.category]
-  const Icon = cat.icon
-  // Real photo/video thumbnails fill the circle; demo posters (which embed
-  // their own title text) and thumbnail-less files use a clean gradient + icon.
-  const showImage = !!thumb && doc.source !== 'seed'
-
-  return (
-    <motion.button
-      onClick={onClick}
-      initial={{ opacity: 0, scale: 0.5, y: 24 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ type: 'spring', stiffness: 260, damping: 20, delay: index * 0.06 }}
-      whileHover={{ scale: 1.06 }}
-      whileTap={{ scale: 0.97 }}
-      className="group flex w-32 flex-col items-center gap-3.5 sm:w-40 lg:w-44"
-    >
-      {/* floating circle */}
-      <motion.div
-        animate={{ y: [0, -7, 0] }}
-        transition={{
-          duration: 3.6 + (index % 4) * 0.45,
-          repeat: Infinity,
-          ease: 'easeInOut',
-          delay: (index % 5) * 0.3,
-        }}
-        className="relative aspect-square w-full overflow-hidden rounded-full border-2 border-white/12 shadow-[0_24px_50px_-18px_rgba(0,0,0,0.7)] ring-0 ring-mg-red/0 transition-[box-shadow,border-color] duration-300 group-hover:border-mg-red/70 group-hover:shadow-glow"
-      >
-        {showImage ? (
-          <img src={thumb} alt={doc.title} className="h-full w-full object-cover" />
-        ) : (
-          <div
-            className="flex h-full w-full items-center justify-center"
-            style={{ background: `linear-gradient(135deg, ${cat.from}, ${cat.to})` }}
-          >
-            <Icon className="h-1/3 w-1/3 text-white/90" />
-          </div>
-        )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/5 to-black/45" />
-        {/* hover play affordance */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-          <span className="flex h-14 w-14 items-center justify-center rounded-full bg-mg-red/90 shadow-glow">
-            <Play className="h-6 w-6 translate-x-[1px] text-white" fill="currentColor" />
-          </span>
-        </div>
-      </motion.div>
-
-      {/* caption */}
-      <div className="px-1 text-center">
-        {doc.model && (
-          <div className="text-[10px] font-bold uppercase tracking-[0.12em] text-mg-red-light">
-            {doc.model}
-          </div>
-        )}
-        <div className="line-clamp-2 text-sm font-semibold leading-snug text-white/90">
-          {doc.title}
-        </div>
-      </div>
-    </motion.button>
-  )
-}
-
 /* ─────────────────────────── Focused stage ─────────────────────────── */
-
-const slide = {
-  enter: (d: number) => ({ x: d >= 0 ? 70 : -70, opacity: 0, scale: 0.98 }),
-  center: { x: 0, opacity: 1, scale: 1 },
-  exit: (d: number) => ({ x: d >= 0 ? -70 : 70, opacity: 0, scale: 0.98 }),
-}
 
 function Stage({
   docs,
@@ -225,7 +217,8 @@ function Stage({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') onNav(1)
       else if (e.key === 'ArrowLeft') onNav(-1)
-      else if (e.key === 'Escape' || e.key === 'Backspace' || e.key.toLowerCase() === 'g') onBack()
+      else if (e.key === 'Escape' || e.key === 'Backspace' || e.key.toLowerCase() === 'g')
+        onBack()
       poke()
     }
     window.addEventListener('keydown', onKey)
@@ -237,7 +230,8 @@ function Stage({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col bg-mg-stage"
+      // The stage is ALWAYS a clean dark spotlight, whatever the board theme.
+      className="absolute inset-0 flex flex-col bg-mg-stage text-white"
       onMouseMove={poke}
       onTouchStart={poke}
     >
@@ -251,6 +245,7 @@ function Stage({
           >
             <div className="flex items-center gap-3">
               <button
+                type="button"
                 onClick={onBack}
                 className="flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-2 text-sm font-medium backdrop-blur transition-colors hover:bg-white/20"
               >
@@ -271,8 +266,10 @@ function Stage({
                 {index + 1} / {docs.length}
               </span>
               <button
+                type="button"
                 onClick={onExit}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 backdrop-blur transition-colors hover:bg-mg-red"
+                aria-label="Quitter"
                 title="Quitter"
               >
                 <X className="h-5 w-5" />
@@ -287,11 +284,11 @@ function Stage({
           <motion.div
             key={doc.id}
             custom={dir}
-            variants={slide}
+            variants={slideX}
             initial="enter"
             animate="center"
             exit="exit"
-            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+            transition={{ duration: 0.4, ease: EASE }}
             className="h-full w-full"
           >
             <DocViewer doc={doc} />
@@ -323,11 +320,13 @@ function NavArrow({
     <AnimatePresence>
       {show && (
         <motion.button
+          type="button"
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
           onClick={onClick}
-          className={`absolute top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 backdrop-blur transition-colors hover:bg-white/25 ${
+          aria-label={side === 'left' ? 'Précédent' : 'Suivant'}
+          className={`absolute top-1/2 z-20 flex h-12 w-12 -translate-y-1/2 items-center justify-center rounded-full bg-white/10 text-white backdrop-blur transition-colors hover:bg-white/25 ${
             side === 'left' ? 'left-3 sm:left-5' : 'right-3 sm:right-5'
           }`}
         >
