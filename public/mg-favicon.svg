@@ -1,11 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#0a0a0b"/>
-  <defs>
-    <linearGradient id="f" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#E11519"/>
-      <stop offset="1" stop-color="#9E0E12"/>
-    </linearGradient>
-  </defs>
-  <path d="M26 8 H38 L47 18 V46 L38 56 H26 L17 46 V18 Z" fill="url(#f)" stroke="#F26D6F" stroke-width="1.2"/>
-  <text x="32" y="40" font-family="Inter, Arial, sans-serif" font-size="17" font-weight="900" fill="#fff" text-anchor="middle">MG</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <path d="M29 4 H71 L96 29 V71 L71 96 H29 L4 71 V29 Z" fill="#ffffff" stroke="#E11D24" stroke-width="8.5" stroke-linejoin="round"/>
+  <g fill="#E11D24">
+    <path d="M16 26 H25 V76 H16 Z"/>
+    <path d="M43 26 H52 V76 H43 Z"/>
+    <path d="M16 26 H25 L38 60 H29 Z"/>
+    <path d="M52 26 H43 L30 60 H39 Z"/>
+    <path d="M83.34 35.6 A22 25 0 1 0 83.34 66.4 L75.85 60.55 A12.5 15.5 0 1 1 75.85 41.45 Z"/>
+    <path d="M64 46.5 H80 V55.5 H64 Z"/>
+  </g>
 </svg>

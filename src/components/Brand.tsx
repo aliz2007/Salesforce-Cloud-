@@ -1,57 +1,47 @@
-import { useId } from 'react'
 import { motion } from 'framer-motion'
 import clsx from 'clsx'
 
 /**
- * MG octagon badge (Morris Garages mark) — filled deep-red octagon with the
- * MG monogram. `variant` toggles a solid fill vs. an outline treatment.
+ * Authentic MG octagon badge (Morris Garages mark): red octagon ring with a
+ * white interior and the interlocking red "MG" monogram. The white fill keeps
+ * the mark legible on both light surfaces and the dark Sales-Mode stage.
  */
 export function MgBadge({
   size = 40,
   className,
-  variant = 'solid',
+  /** Kept for API compatibility; the official mark renders identically. */
+  variant: _variant,
 }: {
   size?: number
   className?: string
   variant?: 'solid' | 'outline'
 }) {
-  const id = useId().replace(/:/g, '')
-  // Vertically-elongated octagon, MG's signature silhouette.
-  const octagon = 'M24 3 H40 L51 15 V49 L40 61 H24 L13 49 V15 Z'
   return (
-    <svg width={size} height={size} viewBox="0 0 64 64" className={className} aria-label="MG">
-      <defs>
-        <linearGradient id={`fill-${id}`} x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#E11519" />
-          <stop offset="1" stopColor="#9E0E12" />
-        </linearGradient>
-      </defs>
-      {variant === 'solid' ? (
-        <>
-          <path d={octagon} fill={`url(#fill-${id})`} stroke="#F26D6F" strokeWidth="1.25" />
-          <path
-            d={octagon}
-            fill="none"
-            stroke="rgba(255,255,255,0.18)"
-            strokeWidth="1"
-            transform="scale(0.86) translate(5.2 5.2)"
-          />
-        </>
-      ) : (
-        <path d={octagon} fill="none" stroke={`url(#fill-${id})`} strokeWidth="3" />
-      )}
-      <text
-        x="32"
-        y="40.5"
-        fontFamily="Inter, Arial, sans-serif"
-        fontSize="20"
-        fontWeight="900"
-        letterSpacing="-0.5"
-        fill="#fff"
-        textAnchor="middle"
-      >
-        MG
-      </text>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 100 100"
+      className={className}
+      role="img"
+      aria-label="MG"
+    >
+      {/* Octagon: white interior + red ring (stroke straddles the path). */}
+      <path
+        d="M29 4 H71 L96 29 V71 L71 96 H29 L4 71 V29 Z"
+        fill="#ffffff"
+        stroke="#E11D24"
+        strokeWidth="8.5"
+        strokeLinejoin="round"
+      />
+      {/* Interlocking MG monogram. */}
+      <g fill="#E11D24">
+        <path d="M16 26 H25 V76 H16 Z" />
+        <path d="M43 26 H52 V76 H43 Z" />
+        <path d="M16 26 H25 L38 60 H29 Z" />
+        <path d="M52 26 H43 L30 60 H39 Z" />
+        <path d="M83.34 35.6 A22 25 0 1 0 83.34 66.4 L75.85 60.55 A12.5 15.5 0 1 1 75.85 41.45 Z" />
+        <path d="M64 46.5 H80 V55.5 H64 Z" />
+      </g>
     </svg>
   )
 }
