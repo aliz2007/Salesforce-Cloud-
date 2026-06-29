@@ -4,95 +4,72 @@ export default {
   theme: {
     extend: {
       colors: {
-        // ── MG Maroc, calé sur mg-maroc.com (thème clair) ──
-        mg: {
-          red: '#E11D24', // compromis : plus profond que le site (#FD2F33), plus vif que l'officiel
-          'red-site': '#FD2F33', // rouge exact de mg-maroc.com
-          'red-deep': '#CD1316', // rouge MG officiel (Pantone 485C) — le plus profond
-          'red-dark': '#B5141A',
-          'red-light': '#FF5C5F',
-          'red-wash': '#FFF1F1', // fond rouge très clair (états sélectionnés)
-          ink: '#1C1917', // texte principal (noir chaud)
-          'ink-soft': '#57534D', // texte secondaire
-          mute: '#8A857E', // texte atténué
-          line: '#E7E4E0', // bordures (gris chaud)
-          panel: '#FFFFFF', // surface des cartes
-          wash: '#F6F5F3', // fond de section subtil
-          base: '#FFFFFF', // fond de page
-          stage: '#0E0E10', // backdrop sombre pour la présentation média
+        // ── LinguaRead — warm "reading desk" palette ──
+        paper: '#F6F1E7', // page background (warm off-white)
+        card: '#FFFDF8', // surface of cards / sheets
+        ink: '#221F1A', // primary text (warm near-black)
+        'ink-soft': '#5B544A', // secondary text
+        mute: '#8E867A', // muted / captions
+        line: '#E7DFD0', // hairline borders
+        brand: {
+          DEFAULT: '#0F7A6B', // deep teal — primary action
+          dark: '#0B5C50',
+          light: '#1AA38E',
+          wash: '#E8F4F1', // selected / tint background
         },
+        ember: {
+          DEFAULT: '#CF5B33', // terracotta accent (record / highlights)
+          dark: '#A8431F',
+          wash: '#FBEDE6',
+        },
+        gold: '#C2941F',
       },
       fontFamily: {
         sans: [
           'Inter',
-          'SF Pro Display',
           '-apple-system',
           'BlinkMacSystemFont',
           'Segoe UI',
           'system-ui',
           'sans-serif',
         ],
+        serif: ['"Fraunces"', 'Georgia', '"Times New Roman"', 'serif'],
       },
       letterSpacing: {
-        mg: '0.22em', // tracking large facon MG ("D É C O U V R E Z")
+        wide2: '0.18em',
       },
       boxShadow: {
-        glow: '0 1px 0 0 rgba(255,255,255,0.4) inset, 0 10px 30px -10px rgba(225,29,36,0.5)',
-        'glow-lg': '0 1px 0 0 rgba(255,255,255,0.45) inset, 0 18px 60px -12px rgba(225,29,36,0.65)',
-        card: '0 1px 2px rgba(28,25,23,0.04), 0 14px 34px -16px rgba(28,25,23,0.22)',
-        'card-hover': '0 2px 4px rgba(28,25,23,0.05), 0 24px 50px -20px rgba(28,25,23,0.30)',
-        bubble: '0 24px 50px -18px rgba(0,0,0,0.7)',
-      },
-      backgroundImage: {
-        'mg-grad': 'linear-gradient(135deg, #E11D24 0%, #B5141A 100%)',
+        card: '0 1px 2px rgba(34,31,26,0.04), 0 14px 34px -16px rgba(34,31,26,0.22)',
+        'card-hover': '0 2px 4px rgba(34,31,26,0.05), 0 24px 50px -20px rgba(34,31,26,0.30)',
+        brand: '0 10px 28px -10px rgba(15,122,107,0.55)',
+        ember: '0 10px 28px -10px rgba(207,91,51,0.55)',
       },
       keyframes: {
-        shimmer: {
-          '100%': { transform: 'translateX(100%)' },
-        },
-        float: {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-8px)' },
-        },
-        'float-slow': {
-          '0%, 100%': { transform: 'translateY(0)' },
-          '50%': { transform: 'translateY(-14px)' },
-        },
-        'gradient-pan': {
-          '0%, 100%': { backgroundPosition: '0% 50%' },
-          '50%': { backgroundPosition: '100% 50%' },
-        },
-        'pulse-glow': {
-          '0%, 100%': { opacity: '0.4' },
-          '50%': { opacity: '0.85' },
-        },
-        'spin-slow': {
-          to: { transform: 'rotate(360deg)' },
-        },
-        aurora: {
-          '0%, 100%': { transform: 'translate(0, 0) scale(1)' },
-          '33%': { transform: 'translate(4%, -6%) scale(1.08)' },
-          '66%': { transform: 'translate(-5%, 4%) scale(0.96)' },
-        },
-        'ken-burns': {
-          '0%': { transform: 'scale(1) translate(0, 0)' },
-          '100%': { transform: 'scale(1.12) translate(-1.5%, -1.5%)' },
-        },
         'fade-in': {
+          from: { opacity: '0', transform: 'translateY(6px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+        'fade-in-still': {
           from: { opacity: '0' },
           to: { opacity: '1' },
         },
+        'pulse-ring': {
+          '0%': { transform: 'scale(1)', opacity: '0.55' },
+          '100%': { transform: 'scale(2.2)', opacity: '0' },
+        },
+        'bar': {
+          '0%, 100%': { transform: 'scaleY(0.35)' },
+          '50%': { transform: 'scaleY(1)' },
+        },
+        'spin-slow': { to: { transform: 'rotate(360deg)' } },
+        'draw': { from: { strokeDashoffset: 'var(--dash)' }, to: { strokeDashoffset: '0' } },
       },
       animation: {
-        shimmer: 'shimmer 1.6s infinite',
-        float: 'float 3.6s ease-in-out infinite',
-        'float-slow': 'float-slow 5s ease-in-out infinite',
-        'gradient-pan': 'gradient-pan 14s ease-in-out infinite',
-        'pulse-glow': 'pulse-glow 9s ease-in-out infinite',
-        'spin-slow': 'spin-slow 26s linear infinite',
-        aurora: 'aurora 22s ease-in-out infinite',
-        'ken-burns': 'ken-burns 24s ease-in-out infinite alternate',
-        'fade-in': 'fade-in 0.5s ease-out both',
+        'fade-in': 'fade-in 0.45s ease-out both',
+        'fade-in-still': 'fade-in-still 0.5s ease-out both',
+        'pulse-ring': 'pulse-ring 1.6s ease-out infinite',
+        'spin-slow': 'spin-slow 1s linear infinite',
+        'draw': 'draw 1.1s ease-out both',
       },
     },
   },

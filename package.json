@@ -1,9 +1,9 @@
 {
-  "name": "mg-maroc-salesforce-cloud",
+  "name": "lingua-read",
   "private": true,
   "version": "0.1.0",
   "type": "module",
-  "description": "Plateforme de partage et de présentation de documents pour MG Maroc — Marketing dépose, Vendeur présente.",
+  "description": "LinguaRead — read a random article in the language you're learning, explain it back to an AI, and get feedback on your grammar, syntax and pronunciation.",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
@@ -11,9 +11,8 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.68.0",
     "clsx": "^2.1.1",
-    "framer-motion": "^11.3.19",
-    "idb": "^8.0.0",
     "lucide-react": "^0.408.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"

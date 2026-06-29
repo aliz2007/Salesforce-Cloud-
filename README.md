@@ -1,107 +1,95 @@
-# MG Maroc · Sales Cloud
+# LinguaRead · Read it. Explain it. Master it.
 
-Plateforme interne pour **MG Maroc** : le service **Marketing & Communication**
-dépose les supports (notes de prix, fiches techniques, vidéos, photos
-extérieur/intérieur, comparatifs, challenges, offres spéciales) ; le **vendeur**
-sélectionne ceux qui l'intéressent et bascule en **Sales Mode** — une
-présentation plein écran, animée et soignée, à dérouler devant le client.
+A language-learning web app for people who **already speak** a language and want
+to get **better** at it — while picking up general knowledge along the way.
 
-> Source unique de documents pour tout le réseau, et un outil de vente immersif.
+The loop is simple:
+
+1. **Read** a random, genuinely interesting article pulled live from Wikipedia,
+   in the language you're practising.
+2. **Explain** what you understood — *in that language* — by **speaking** (with
+   your microphone) or **typing**.
+3. **Get reviewed** by an AI tutor (Claude) that grades your **comprehension**
+   and flags errors of **grammar**, **syntax/word-order**, **vocabulary** and —
+   when you speak — **pronunciation**, with concrete corrections and an honest
+   score.
+
+Because you have to reconstruct the meaning in your own words, you practise
+*active* production instead of passive recognition — and learn something new
+every session.
 
 ---
 
-## ✨ Fonctionnalités
+## ✨ Features
 
-- **Espace Marketing** — dépôt par glisser-déposer (multi-fichiers) ou par lien
-  (YouTube, Drive…), organisation par **8 catégories**, édition / suppression,
-  recherche et filtres.
-- **Espace Vendeur** — navigation par catégorie, **sélection multiple**, bac de
-  sélection persistant, puis lancement du Sales Mode.
-- **Sales Mode** — intro cinématique, **menu groupé par catégorie**, scène de
-  présentation plein écran (image / vidéo / PDF), navigation clavier
-  (← →, `Échap`/`G` = menu), flèches, filmstrip, et chrome auto-masqué.
-- **Aucun login** — sélecteur de rôle sur l'accueil (à faire évoluer plus tard).
-- **100 % hors-ligne au démarrage** — contenu de démo généré, stockage local.
+- **10 languages** (Spanish, French, German, Italian, Portuguese, Dutch,
+  English, Russian, Japanese, Chinese), each from its own Wikipedia.
+- **Three levels** that tune article length/density (beginner → advanced).
+- **Speak or type** — voice uses the browser's Web Speech API; the transcript is
+  editable before you submit.
+- **AI review** via the Anthropic API (Claude Opus) returning structured,
+  categorised feedback with corrections in the target language and explanations
+  in English.
+- **Progress tracking** — streak, average score, best score and recent sessions,
+  stored locally in your browser.
+- **Demo mode** — the whole flow works with **no API key**; the review is a local
+  placeholder until you add a key.
 
 ## 🧱 Stack
 
-Vite · React · TypeScript · Tailwind CSS · Framer Motion · lucide-react · idb.
+Vite · React · TypeScript · Tailwind CSS · `@anthropic-ai/sdk` · lucide-react.
+No backend — it's a static site.
 
-## 🚀 Démarrer
+## 🚀 Getting started
 
 ```bash
 npm install
 npm run dev      # http://localhost:5173
-npm run build    # build de production dans dist/
-npm run preview  # prévisualise le build
+npm run build    # production build in dist/
+npm run preview  # preview the build
 ```
 
-## 🗂️ Stockage : une seule couche à remplacer
+Open the app, click the gear → **Settings**, and paste an Anthropic API key
+(<https://console.anthropic.com/settings/keys>) to enable real feedback. The key
+is stored only in your browser (`localStorage`) and is sent **directly** from
+your device to the Anthropic API — it never passes through any server of ours.
 
-Toute l'app passe par l'interface **`DocumentStore`**
-(`src/storage/DocumentStore.ts`). C'est le **seul** point qui décide « où vivent
-les documents ».
+## 🔌 How it works
 
-| Backend | Fichier | État |
-| --- | --- | --- |
-| **IndexedDB** (local, par navigateur) | `src/storage/IndexedDbStore.ts` | ✅ actif par défaut |
-| **Google Drive** (lecture seule) | `src/storage/GoogleDriveStore.ts` | 🧩 scaffold documenté |
+| Concern | Where |
+| --- | --- |
+| Random articles | `src/lib/wikipedia.ts` — public Wikipedia Action API (`origin=*` CORS), filtered to fit the chosen level. |
+| Speech-to-text | `src/lib/speech.ts` — thin wrapper over `SpeechRecognition`. |
+| AI review | `src/lib/ai.ts` — Claude via `@anthropic-ai/sdk` (browser-direct) with structured JSON output; includes an offline mock. |
+| Storage | `src/lib/storage.ts` — API key, preferences and progress in `localStorage`. |
+| Screens | `src/components/` — `Home` · `ReadingView` · `ExplainView` · `FeedbackView` · `SettingsModal`. |
 
-Le backend se choisit dans **`src/storage/index.ts`** (une seule ligne). L'UI ne
-change jamais.
+### A note on pronunciation
 
-> ⚠️ En local (IndexedDB), les documents vivent dans **le navigateur de chaque
-> personne** — parfait pour démos et usage mono-poste. Pour qu'Imane dépose et
-> que tous les vendeurs voient les mêmes documents, il faut un **stockage
-> partagé** : c'est le rôle de Google Drive ci-dessous.
+The browser speech API returns **text**, not audio, so the app can't grade
+pronunciation acoustically. It passes the transcript (and the recogniser's
+confidence) to the AI, which flags *likely* pronunciation difficulties from
+transcription slips and commonly mispronounced words — framed as "likely", not
+measured. True acoustic scoring would need an audio model and is a natural next
+step.
 
-### Brancher Google Drive (recommandé pour la prod)
+## ⚙️ Configuration
 
-Modèle le plus simple, sans OAuth :
+No build-time configuration is required. Optionally, a deployment can bake in a
+default key via `VITE_ANTHROPIC_API_KEY` (see `.env.example`) — but note anything
+in `VITE_*` ships to the client, so only do that for a private/internal build.
 
-1. Imane crée **un dossier Drive partagé** « MG Maroc — Sales Cloud ».
-2. À l'intérieur, **un sous-dossier par catégorie** (Notes de prix, Fiches
-   techniques, Vidéos, Photos extérieur, Photos intérieur, Comparatifs,
-   Challenges, Offres spéciales). Elle y dépose ses fichiers — c'est tout.
-3. Partage du dossier : **« Tous les utilisateurs disposant du lien → Lecteur »**.
-4. Crée une **clé API** Google Cloud restreinte à *Google Drive API*.
-5. Renseigne `.env` (voir `.env.example`) puis, dans `src/storage/index.ts` :
+## 🌐 Hosting
 
-   ```ts
-   import { GoogleDriveStore } from './GoogleDriveStore'
-   export const store = new GoogleDriveStore({
-     apiKey: import.meta.env.VITE_GDRIVE_API_KEY,
-     rootFolderId: import.meta.env.VITE_GDRIVE_ROOT_FOLDER_ID,
-   })
-   ```
+The bundle is small and fully static — deploy `dist/` to Cloudflare Pages,
+Vercel, Netlify, GitHub Pages, or any static host. Connect the repo and set the
+build command to `npm run build` and the output directory to `dist/`.
 
-Dans ce mode, « déposer un document » = déposer un fichier dans Drive (l'UX cloud
-voulue). Les uploads in-app vers Drive nécessiteraient un flux OAuth (évolution
-possible : passer `canWrite = true`).
+## 🗺️ Ideas / roadmap
 
-## 🌐 Héberger gratuitement
-
-Le bundle est minuscule (~100 Ko gzip) et les médias lourds vivent sur Drive :
-n'importe quel hébergeur statique gratuit convient.
-
-- **Cloudflare Pages** ou **Vercel** ou **Netlify** : build `npm run build`,
-  dossier de sortie `dist/`. Branche le dépôt GitHub → déploiement auto à chaque
-  push.
-- Variables d'env (si Drive) : `VITE_GDRIVE_API_KEY`, `VITE_GDRIVE_ROOT_FOLDER_ID`.
-
-## 📁 Structure
-
-```
-src/
-  data/         catégories + jeu de démo
-  storage/      DocumentStore (interface) + IndexedDb / GoogleDrive + médias/posters
-  context/      état global (documents, CRUD, sélection)
-  components/   Landing · MarketingDashboard · SalesBrowser · SalesMode · …
-```
-
-## 🗺️ Pistes d'évolution
-
-- Authentification (admin Marketing / vendeurs).
-- Upload in-app vers Drive (OAuth) → `canWrite = true`.
-- Statistiques de consultation, favoris vendeur, partage d'une présentation par lien.
-- Mode hors-ligne complet (PWA) pour le showroom sans réseau.
+- Acoustic pronunciation scoring with an audio model.
+- Spaced-repetition of the specific mistakes you make.
+- Save articles and re-attempt them later; per-language progress charts.
+- Difficulty auto-calibration based on your recent scores.
+- A small backend proxy so a shared deployment can offer AI feedback without
+  each user supplying a key.

@@ -1,131 +1,183 @@
-import { useState } from 'react'
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
-import { StoreProvider, useStore } from './context/StoreContext'
-import type { Role } from './types'
-import Landing from './components/Landing'
-import MarketingDashboard from './components/MarketingDashboard'
-import SalesBrowser from './components/SalesBrowser'
-import SalesMode from './components/SalesMode'
-import { MgBadge } from './components/Brand'
-import { EASE } from './motion'
+import { useEffect, useMemo, useState } from 'react'
+import { Header } from './components/Header'
+import { Home } from './components/Home'
+import { ReadingView } from './components/ReadingView'
+import { ExplainView } from './components/ExplainView'
+import { FeedbackView } from './components/FeedbackView'
+import { SettingsModal } from './components/SettingsModal'
+import { fetchRandomArticle } from './lib/wikipedia'
+import { reviewWithClaude, mockReview, type ReviewInput } from './lib/ai'
+import { isSpeechSupported } from './lib/speech'
+import {
+  getApiKey,
+  setApiKey as persistApiKey,
+  loadPrefs,
+  savePrefs,
+  loadProgress,
+  addRecord,
+  clearProgress,
+} from './lib/storage'
+import type { Article, Feedback, InputMode, Level, Progress } from './types'
 
-type View = 'landing' | 'marketing' | 'vendeur' | 'sales'
-
-const fade = {
-  initial: { opacity: 0, y: 16, filter: 'blur(4px)' },
-  animate: { opacity: 1, y: 0, filter: 'blur(0px)' },
-  exit: { opacity: 0, y: -16, filter: 'blur(4px)' },
-  transition: { duration: 0.4, ease: EASE },
-}
-
-function Shell() {
-  const { ready } = useStore()
-  const [view, setView] = useState<View>('landing')
-
-  if (!ready) return <Splash />
-
-  const pick = (role: Role) => setView(role)
-
-  return (
-    <AnimatePresence mode="wait">
-      {view === 'landing' && (
-        <motion.div key="landing" {...fade}>
-          <Landing onPick={pick} />
-        </motion.div>
-      )}
-
-      {view === 'marketing' && (
-        <motion.div key="marketing" {...fade}>
-          <MarketingDashboard onExit={() => setView('landing')} />
-        </motion.div>
-      )}
-
-      {view === 'vendeur' && (
-        <motion.div key="vendeur" {...fade}>
-          <SalesBrowser
-            onExit={() => setView('landing')}
-            onLaunch={() => setView('sales')}
-          />
-        </motion.div>
-      )}
-
-      {view === 'sales' && (
-        <SalesMode key="sales" onExit={() => setView('vendeur')} />
-      )}
-    </AnimatePresence>
-  )
-}
-
-function Splash() {
-  const reduce = useReducedMotion()
-  return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-mg-base">
-      {/* Ambient glow */}
-      <div
-        className={`pointer-events-none absolute left-1/2 top-1/2 h-[360px] w-[360px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-mg-red/15 blur-[120px] ${
-          reduce ? '' : 'animate-pulse-glow'
-        }`}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: EASE }}
-        className="relative flex flex-col items-center gap-5"
-      >
-        <div className="relative flex h-24 w-24 items-center justify-center">
-          {/* Orbiting / spinning ring */}
-          <motion.div
-            aria-hidden
-            className="absolute inset-0 rounded-full border-2 border-transparent border-t-mg-red border-r-mg-red/40"
-            animate={reduce ? undefined : { rotate: 360 }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'linear' }}
-          />
-          {/* Soft pulsing halo */}
-          <motion.div
-            aria-hidden
-            className="absolute inset-1.5 rounded-full bg-mg-red/5"
-            animate={reduce ? undefined : { scale: [1, 1.12, 1], opacity: [0.5, 0.9, 0.5] }}
-            transition={{ duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
-          />
-          {/* Floating badge */}
-          <motion.div
-            animate={reduce ? undefined : { y: [0, -6, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-          >
-            <MgBadge size={56} />
-          </motion.div>
-        </div>
-
-        <div
-          className={`overline bg-gradient-to-r from-mg-red via-mg-red-light to-mg-red bg-clip-text text-mg-red text-transparent [background-size:200%_auto] ${
-            reduce ? '' : 'animate-gradient-pan'
-          }`}
-        >
-          Animés par la passion
-        </div>
-
-        {/* Shimmering progress hint */}
-        <div className="relative h-1 w-32 overflow-hidden rounded-full bg-mg-line">
-          {reduce ? (
-            <div className="absolute inset-y-0 left-0 w-1/2 rounded-full bg-mg-grad" />
-          ) : (
-            <motion.div
-              className="absolute inset-y-0 left-0 w-1/2 rounded-full bg-mg-grad"
-              animate={{ x: ['-110%', '230%'] }}
-              transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
-            />
-          )}
-        </div>
-      </motion.div>
-    </div>
-  )
-}
+type Screen = 'home' | 'reading' | 'explain' | 'feedback'
 
 export default function App() {
+  const speechSupported = useMemo(() => isSpeechSupported(), [])
+
+  const [apiKey, setApiKey] = useState<string>(() => getApiKey())
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  const savedPrefs = useMemo(() => loadPrefs(), [])
+  const [lang, setLang] = useState<string>(savedPrefs?.lang ?? 'es')
+  const [level, setLevel] = useState<Level>(savedPrefs?.level ?? 'intermediate')
+  const [mode, setMode] = useState<InputMode>(
+    savedPrefs?.mode && !(savedPrefs.mode === 'speak' && !speechSupported) ? savedPrefs.mode : speechSupported ? 'speak' : 'type',
+  )
+
+  const [screen, setScreen] = useState<Screen>('home')
+  const [article, setArticle] = useState<Article | null>(null)
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const [progress, setProgress] = useState<Progress>(() => loadProgress())
+
+  const [loadingArticle, setLoadingArticle] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
+  const [homeError, setHomeError] = useState<string | null>(null)
+  const [explainError, setExplainError] = useState<string | null>(null)
+
+  const hasKey = apiKey.trim().length > 0
+
+  useEffect(() => {
+    savePrefs({ lang, level, mode })
+  }, [lang, level, mode])
+
+  // Keep window scrolled to top on screen change.
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'auto' })
+  }, [screen, article])
+
+  async function loadArticle(toScreen: Screen = 'reading') {
+    setHomeError(null)
+    setLoadingArticle(true)
+    try {
+      const a = await fetchRandomArticle(lang, level)
+      setArticle(a)
+      setFeedback(null)
+      setScreen(toScreen)
+    } catch (err: any) {
+      setHomeError(err?.message ?? 'Could not load an article. Check your connection and try again.')
+    } finally {
+      setLoadingArticle(false)
+    }
+  }
+
+  async function handleSubmit(explanation: string, confidence?: number) {
+    if (!article) return
+    setExplainError(null)
+    setSubmitting(true)
+    const input: ReviewInput = { article, explanation, mode, speechConfidence: confidence }
+    try {
+      const result = hasKey ? await reviewWithClaude(input, apiKey) : mockReview(input)
+      setFeedback(result)
+      setProgress(
+        addRecord({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          date: Date.now(),
+          lang,
+          level,
+          articleTitle: article.title,
+          score: result.score,
+          comprehension: result.comprehension,
+          mode,
+        }),
+      )
+      setScreen('feedback')
+    } catch (err: any) {
+      setExplainError(err?.message ?? 'Something went wrong getting your feedback.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
+  function handleSaveKey(key: string) {
+    persistApiKey(key)
+    setApiKey(key)
+  }
+
+  function handleClearProgress() {
+    clearProgress()
+    setProgress({ records: [] })
+  }
+
   return (
-    <StoreProvider>
-      <Shell />
-    </StoreProvider>
+    <div className="min-h-screen bg-paper bg-grain">
+      <Header hasKey={hasKey} onHome={() => setScreen('home')} onSettings={() => setSettingsOpen(true)} />
+
+      <main>
+        {screen === 'home' && (
+          <Home
+            lang={lang}
+            level={level}
+            mode={mode}
+            speechSupported={speechSupported}
+            progress={progress}
+            loading={loadingArticle}
+            error={homeError}
+            onLang={setLang}
+            onLevel={setLevel}
+            onMode={setMode}
+            onStart={() => loadArticle('reading')}
+          />
+        )}
+
+        {screen === 'reading' && article && (
+          <ReadingView
+            article={article}
+            level={level}
+            loadingNext={loadingArticle}
+            onExplain={() => {
+              setExplainError(null)
+              setScreen('explain')
+            }}
+            onSkip={() => loadArticle('reading')}
+            onBack={() => setScreen('home')}
+          />
+        )}
+
+        {screen === 'explain' && article && (
+          <ExplainView
+            article={article}
+            mode={mode}
+            submitting={submitting}
+            error={explainError}
+            onSubmit={handleSubmit}
+            onBack={() => setScreen('reading')}
+            onSwitchToType={() => setMode('type')}
+          />
+        )}
+
+        {screen === 'feedback' && article && feedback && (
+          <FeedbackView
+            feedback={feedback}
+            article={article}
+            mode={mode}
+            isDemo={!hasKey}
+            onNext={() => loadArticle('reading')}
+            onRetry={() => {
+              setExplainError(null)
+              setScreen('explain')
+            }}
+            onHome={() => setScreen('home')}
+          />
+        )}
+      </main>
+
+      <SettingsModal
+        open={settingsOpen}
+        apiKey={apiKey}
+        onSave={handleSaveKey}
+        onClearProgress={handleClearProgress}
+        onClose={() => setSettingsOpen(false)}
+      />
+    </div>
   )
 }

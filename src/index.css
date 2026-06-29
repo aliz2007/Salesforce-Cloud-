@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -16,13 +16,12 @@
   html,
   body,
   #root {
-    height: 100%;
+    min-height: 100%;
   }
 
   body {
-    @apply bg-mg-base text-mg-ink font-sans antialiased;
+    @apply bg-paper text-ink font-sans antialiased;
     margin: 0;
-    overflow-x: hidden;
   }
 
   ::-webkit-scrollbar {
@@ -33,105 +32,82 @@
     background: transparent;
   }
   ::-webkit-scrollbar-thumb {
-    background: #d8d4cf;
+    background: #ddd3c2;
     border-radius: 999px;
     border: 2px solid transparent;
     background-clip: padding-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #c4bfb8;
+    background: #cabfa9;
     background-clip: padding-box;
   }
 }
 
 @layer components {
-  .panel {
-    @apply bg-mg-panel border border-mg-line rounded-xl;
-  }
-
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold
-           transition-all duration-200 select-none active:scale-[0.97] disabled:opacity-40 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold
+           transition-all duration-200 select-none active:scale-[0.97]
+           disabled:opacity-40 disabled:pointer-events-none;
   }
   .btn-primary {
-    @apply btn bg-mg-grad text-white shadow-glow hover:brightness-105;
+    @apply btn bg-brand text-white shadow-brand hover:bg-brand-dark;
+  }
+  .btn-ember {
+    @apply btn bg-ember text-white shadow-ember hover:bg-ember-dark;
   }
   .btn-ghost {
-    @apply btn bg-white text-mg-ink border border-mg-line hover:bg-mg-wash;
+    @apply btn bg-card text-ink border border-line hover:bg-paper;
   }
   .btn-dark {
-    @apply btn bg-mg-ink text-white hover:bg-mg-ink/90;
+    @apply btn bg-ink text-paper hover:bg-ink/90;
   }
 
   .input {
-    @apply w-full rounded-lg border border-mg-line bg-white px-3.5 py-2.5 text-sm text-mg-ink
-           outline-none transition-colors placeholder:text-mg-mute
-           focus:border-mg-red focus:ring-2 focus:ring-mg-red/20;
+    @apply w-full rounded-xl border border-line bg-card px-3.5 py-2.5 text-sm text-ink
+           outline-none transition-colors placeholder:text-mute
+           focus:border-brand focus:ring-2 focus:ring-brand/20;
   }
   select.input {
-    @apply appearance-none bg-white;
+    @apply appearance-none;
   }
 
-  /* MG-style overline: small, uppercase, wide tracking, red */
+  .card {
+    @apply bg-card border border-line rounded-2xl shadow-card;
+  }
+
   .overline {
-    @apply text-[11px] font-bold uppercase tracking-mg text-mg-red;
+    @apply text-[11px] font-bold uppercase tracking-wide2 text-brand;
   }
 
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full border border-line bg-card px-3 py-1.5
+           text-sm font-medium text-ink-soft transition-all cursor-pointer select-none
+           hover:border-brand/50;
   }
-  .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
-
-  /* Frosted-glass surfaces (used on dark stages / overlays) */
-  .glass {
-    @apply border border-white/10 bg-white/[0.06] backdrop-blur-xl;
-  }
-  .glass-strong {
-    @apply border border-white/15 bg-white/[0.1] backdrop-blur-2xl;
-  }
-  .glass-light {
-    @apply border border-black/5 bg-white/70 backdrop-blur-xl;
-  }
-
-  /* Circular control button on dark surfaces */
-  .ctl {
-    @apply flex items-center justify-center rounded-full border border-white/10 bg-white/[0.06]
-           text-white transition-all duration-200 hover:bg-white/[0.16] active:scale-95;
+  .chip-active {
+    @apply border-brand bg-brand-wash text-brand-dark;
   }
 }
 
-/* Subtle dotted grid for light surfaces */
-.bg-grid {
-  background-image: radial-gradient(circle at 1px 1px, rgba(28, 25, 23, 0.06) 1px, transparent 0);
-  background-size: 26px 26px;
+/* Article prose */
+.prose-article {
+  @apply font-serif text-[1.075rem] leading-[1.85] text-ink;
+}
+.prose-article p {
+  margin-bottom: 1rem;
 }
 
-/* Dotted grid for dark surfaces */
-.bg-grid-dark {
-  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.06) 1px, transparent 0);
-  background-size: 26px 26px;
-}
-
-/* Dark scrollbar (for overlays / Sales Mode boards) */
-.scroll-dark::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.18);
-  background-clip: padding-box;
-}
-.scroll-dark::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.3);
-  background-clip: padding-box;
+.bg-grain {
+  background-image: radial-gradient(circle at 1px 1px, rgba(34, 31, 26, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
 .text-balance {
   text-wrap: balance;
 }
 
-/* Honour reduced-motion preferences for decorative loops */
 @media (prefers-reduced-motion: reduce) {
-  .motion-safe-only {
+  * {
     animation: none !important;
   }
 }
