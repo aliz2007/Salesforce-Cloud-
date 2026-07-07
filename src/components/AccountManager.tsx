@@ -18,6 +18,7 @@ import {
 import type { SafeUser, UserRole } from '../types'
 import { useAuth } from '../context/AuthContext'
 import AccountChip from './auth/AccountChip'
+import Portal from './Portal'
 import { fadeUp, springSoft, staggerContainer } from '../motion'
 
 function initials(name: string) {
@@ -228,6 +229,7 @@ function Shell({
   children: React.ReactNode
 }) {
   return (
+    <Portal>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -256,6 +258,7 @@ function Shell({
         {children}
       </motion.div>
     </motion.div>
+    </Portal>
   )
 }
 

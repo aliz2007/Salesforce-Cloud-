@@ -17,6 +17,7 @@ import type { CategoryId } from '../types'
 import { CATEGORIES, MG_MODELS } from '../data/categories'
 import { useStore } from '../context/StoreContext'
 import AccountChip from './auth/AccountChip'
+import Portal from './Portal'
 import { fadeUp, springSoft, staggerContainer } from '../motion'
 import {
   DEFAULT_TCO,
@@ -479,6 +480,7 @@ function AddToDocs({
   }
 
   return (
+    <Portal>
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -538,5 +540,6 @@ function AddToDocs({
         </div>
       </motion.div>
     </motion.div>
+    </Portal>
   )
 }

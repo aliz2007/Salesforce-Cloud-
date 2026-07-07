@@ -5,6 +5,7 @@ import clsx from 'clsx'
 import type { CategoryId, DocMeta } from '../types'
 import { CATEGORIES, MG_MODELS } from '../data/categories'
 import { useStore } from '../context/StoreContext'
+import Portal from './Portal'
 
 export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClose: () => void }) {
   const { update } = useStore()
@@ -40,6 +41,7 @@ export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClo
   }
 
   return (
+    <Portal>
     <AnimatePresence>
       {doc && (
         <motion.div
@@ -124,5 +126,6 @@ export default function EditModal({ doc, onClose }: { doc: DocMeta | null; onClo
         </motion.div>
       )}
     </AnimatePresence>
+    </Portal>
   )
 }

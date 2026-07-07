@@ -6,6 +6,7 @@ import type { CategoryId } from '../types'
 import { CATEGORIES, MG_MODELS } from '../data/categories'
 import { useStore } from '../context/StoreContext'
 import { humanSize, inferKind } from '../storage/media'
+import Portal from './Portal'
 
 interface Picked {
   file: File
@@ -88,6 +89,7 @@ export default function UploadModal({
   }
 
   return (
+    <Portal>
     <AnimatePresence>
       {open && (
         <motion.div
@@ -301,6 +303,7 @@ export default function UploadModal({
         </motion.div>
       )}
     </AnimatePresence>
+    </Portal>
   )
 }
 

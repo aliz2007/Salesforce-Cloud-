@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AlertTriangle, Loader2 } from 'lucide-react'
 import clsx from 'clsx'
+import Portal from './Portal'
 
 export default function ConfirmDialog({
   open,
@@ -32,6 +33,7 @@ export default function ConfirmDialog({
   }
 
   return (
+    <Portal>
     <AnimatePresence>
       {open && (
         <motion.div
@@ -74,5 +76,6 @@ export default function ConfirmDialog({
         </motion.div>
       )}
     </AnimatePresence>
+    </Portal>
   )
 }

@@ -4,6 +4,7 @@ import { X } from 'lucide-react'
 import type { DocMeta } from '../types'
 import { CATEGORY_MAP } from '../data/categories'
 import DocViewer from './DocViewer'
+import Portal from './Portal'
 import { EASE, springSoft } from '../motion'
 
 export default function Lightbox({
@@ -20,6 +21,7 @@ export default function Lightbox({
   }, [onClose])
 
   return (
+    <Portal>
     <AnimatePresence>
       {doc && (
         <motion.div
@@ -72,5 +74,6 @@ export default function Lightbox({
         </motion.div>
       )}
     </AnimatePresence>
+    </Portal>
   )
 }

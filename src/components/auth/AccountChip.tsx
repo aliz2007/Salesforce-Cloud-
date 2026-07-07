@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ChevronDown, KeyRound, LogOut, ShieldCheck, User, X, Loader2, Check } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import Portal from '../Portal'
 import { springSoft } from '../../motion'
 
 function initials(name: string): string {
@@ -119,6 +120,14 @@ function ChangePasswordModal({ open, onClose }: { open: boolean; onClose: () => 
     onClose()
   }
 
+  useEffect(() => {
+    if (!open) return
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close()
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open])
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!valid || busy) return
@@ -134,15 +143,16 @@ function ChangePasswordModal({ open, onClose }: { open: boolean; onClose: () => 
   }
 
   return (
-    <AnimatePresence>
-      {open && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          onClick={close}
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-mg-ink/40 p-5 backdrop-blur-sm"
-        >
+    <Portal>
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={close}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-mg-ink/40 p-5 backdrop-blur-sm"
+          >
           <motion.form
             initial={{ y: 20, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -198,7 +208,8 @@ function ChangePasswordModal({ open, onClose }: { open: boolean; onClose: () => 
             )}
           </motion.form>
         </motion.div>
-      )}
-    </AnimatePresence>
+        )}
+      </AnimatePresence>
+    </Portal>
   )
 }
