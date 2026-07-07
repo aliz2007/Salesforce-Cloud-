@@ -8,14 +8,18 @@ import { useThumb } from '../hooks'
 import CategoryRail, { type CategoryFilter } from './CategoryRail'
 import DocCard from './DocCard'
 import Lightbox from './Lightbox'
+import AccountChip from './auth/AccountChip'
 import { EASE, springSoft, springSnappy } from '../motion'
 
 export default function SalesBrowser({
   onExit,
   onLaunch,
+  account,
 }: {
   onExit: () => void
   onLaunch: () => void
+  /** Vendeur mode: show the account menu instead of a back arrow. */
+  account?: boolean
 }) {
   const { docs, selectedIds, selectedDocs, isSelected, toggleSelect, selectMany, clearSelection } =
     useStore()
@@ -54,48 +58,53 @@ export default function SalesBrowser({
       >
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-3.5">
           <div className="flex items-center gap-4">
-            <motion.button
-              whileHover={{ scale: 1.08, x: -2 }}
-              whileTap={{ scale: 0.92 }}
-              transition={springSoft}
-              onClick={onExit}
-              aria-label="Retour"
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink transition-colors hover:bg-mg-line"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </motion.button>
+            {!account && (
+              <motion.button
+                whileHover={{ scale: 1.08, x: -2 }}
+                whileTap={{ scale: 0.92 }}
+                transition={springSoft}
+                onClick={onExit}
+                aria-label="Retour"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-mg-wash text-mg-ink transition-colors hover:bg-mg-line"
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </motion.button>
+            )}
             <Wordmark subtitle="Espace Vendeur" />
           </div>
-          <motion.button
-            onClick={onLaunch}
-            disabled={selectedDocs.length === 0}
-            whileHover={{ scale: 1.03 }}
-            whileTap={{ scale: 0.97 }}
-            animate={hasSelection && !reduce ? { scale: [1, 1.035, 1] } : { scale: 1 }}
-            transition={
-              hasSelection && !reduce
-                ? { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
-                : springSoft
-            }
-            className="btn-primary"
-          >
-            <Play className="h-4 w-4" fill="currentColor" />
-            Sales Mode
-            <AnimatePresence>
-              {selectedDocs.length > 0 && (
-                <motion.span
-                  key={selectedDocs.length}
-                  initial={{ scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  exit={{ scale: 0.5, opacity: 0 }}
-                  transition={springSnappy}
-                  className="ml-1 rounded-full bg-white/25 px-1.5 text-xs"
-                >
-                  {selectedDocs.length}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </motion.button>
+          <div className="flex items-center gap-3">
+            <motion.button
+              onClick={onLaunch}
+              disabled={selectedDocs.length === 0}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              animate={hasSelection && !reduce ? { scale: [1, 1.035, 1] } : { scale: 1 }}
+              transition={
+                hasSelection && !reduce
+                  ? { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }
+                  : springSoft
+              }
+              className="btn-primary"
+            >
+              <Play className="h-4 w-4" fill="currentColor" />
+              Sales Mode
+              <AnimatePresence>
+                {selectedDocs.length > 0 && (
+                  <motion.span
+                    key={selectedDocs.length}
+                    initial={{ scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    exit={{ scale: 0.5, opacity: 0 }}
+                    transition={springSnappy}
+                    className="ml-1 rounded-full bg-white/25 px-1.5 text-xs"
+                  >
+                    {selectedDocs.length}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </motion.button>
+            {account && <AccountChip />}
+          </div>
         </div>
       </motion.header>
 

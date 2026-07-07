@@ -1,34 +1,22 @@
-import { IndexedDbStore } from './IndexedDbStore'
-import { buildSeedDocs } from '../data/seed'
+import { ApiStore } from './ApiStore'
 import type { DocumentStore } from './DocumentStore'
 
 /**
  * ── Backend selection ──────────────────────────────────────────────────────
- * This is the ONLY place that decides where documents live. To move to Google
- * Drive later, implement `GoogleDriveStore` (same `DocumentStore` interface)
- * and return it here. Nothing else in the app changes.
+ * The app now runs against the intranet server (server/). Documents and
+ * accounts live on that shared machine, so every device on the WiFi sees the
+ * same library. To move to another backend later (SQLite, Google Drive, …),
+ * implement the `DocumentStore` interface and swap the line below — nothing
+ * else in the app changes.
  */
-export const store: DocumentStore = new IndexedDbStore()
+export const store: DocumentStore = new ApiStore()
 
-const SEED_FLAG = 'mg-cloud-seeded-v1'
+/** Demo content is seeded server-side on first run — nothing to do here. */
+export async function ensureSeeded(): Promise<void> {}
 
-/** Seed demo content once (first ever launch on this browser). */
-export async function ensureSeeded(): Promise<void> {
-  if (localStorage.getItem(SEED_FLAG)) return
-  const existing = await store.list()
-  if (existing.length === 0 && store instanceof IndexedDbStore) {
-    await store.seed(buildSeedDocs(Date.now()))
-  }
-  localStorage.setItem(SEED_FLAG, '1')
-}
-
-/** Wipe everything and re-load the demo set. */
+/** Wipe documents and re-seed the demo set (superadmin only, enforced server-side). */
 export async function resetToDemo(): Promise<void> {
   await store.clearAll()
-  if (store instanceof IndexedDbStore) {
-    await store.seed(buildSeedDocs(Date.now()))
-  }
-  localStorage.setItem(SEED_FLAG, '1')
 }
 
 export type { DocumentStore }

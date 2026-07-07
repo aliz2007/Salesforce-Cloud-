@@ -39,6 +39,8 @@ export interface DocMeta {
   remoteUrl?: string
   /** Optional pre-computed thumbnail as a data/remote URL (seed + remote). */
   posterUrl?: string
+  /** Server-backed stores: true when a dedicated thumbnail file exists. */
+  hasThumb?: boolean
   createdAt: number
   updatedAt: number
 }
@@ -56,3 +58,30 @@ export interface NewDocInput {
 }
 
 export type Role = 'marketing' | 'vendeur'
+
+/* ───────────────────────────── Auth ───────────────────────────── */
+
+/**
+ * Application roles. Kept intentionally small:
+ *  - 'superadmin' : Imane — full access + account management.
+ *  - 'vendeur'    : the sales force — browse & present only.
+ */
+export type UserRole = 'superadmin' | 'vendeur'
+
+export interface UserAccount {
+  id: string
+  /** Unique login, stored lowercased. */
+  username: string
+  displayName: string
+  role: UserRole
+  /** PBKDF2 salt (hex) + derived hash (hex). Never store plaintext. */
+  salt: string
+  passwordHash: string
+  /** Forces a password change on next sign-in (seeded/reset accounts). */
+  mustChangePassword: boolean
+  createdAt: number
+  updatedAt: number
+}
+
+/** Public view of an account (no secrets) — safe to hold in UI state. */
+export type SafeUser = Omit<UserAccount, 'salt' | 'passwordHash'>

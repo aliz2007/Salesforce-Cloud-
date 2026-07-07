@@ -1,15 +1,16 @@
 import { useState } from 'react'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
+import { AuthProvider, useAuth } from './context/AuthContext'
 import { StoreProvider, useStore } from './context/StoreContext'
-import type { Role } from './types'
-import Landing from './components/Landing'
+import Login from './components/auth/Login'
+import ChangePasswordGate from './components/auth/ChangePasswordGate'
+import Hub, { type HubDest } from './components/Hub'
 import MarketingDashboard from './components/MarketingDashboard'
 import SalesBrowser from './components/SalesBrowser'
 import SalesMode from './components/SalesMode'
+import AccountManager from './components/AccountManager'
 import { MgBadge } from './components/Brand'
 import { EASE } from './motion'
-
-type View = 'landing' | 'marketing' | 'vendeur' | 'sales'
 
 const fade = {
   initial: { opacity: 0, y: 16, filter: 'blur(4px)' },
@@ -18,40 +19,85 @@ const fade = {
   transition: { duration: 0.4, ease: EASE },
 }
 
-function Shell() {
-  const { ready } = useStore()
-  const [view, setView] = useState<View>('landing')
+/* ── Top-level gate: splash → login → (first-login) change password → app ── */
+function AuthGate() {
+  const { ready, user } = useAuth()
 
-  if (!ready) return <Splash />
-
-  const pick = (role: Role) => setView(role)
+  let key = 'splash'
+  let node = <Splash />
+  if (ready && !user) {
+    key = 'login'
+    node = <Login />
+  } else if (ready && user?.mustChangePassword) {
+    key = 'change'
+    node = <ChangePasswordGate />
+  } else if (ready && user) {
+    key = 'app'
+    node = (
+      <StoreProvider>
+        <AuthedApp role={user.role} />
+      </StoreProvider>
+    )
+  }
 
   return (
     <AnimatePresence mode="wait">
-      {view === 'landing' && (
-        <motion.div key="landing" {...fade}>
-          <Landing onPick={pick} />
+      <motion.div key={key} {...fade}>
+        {node}
+      </motion.div>
+    </AnimatePresence>
+  )
+}
+
+/* ── Role-based routing once signed in ── */
+function AuthedApp({ role }: { role: 'superadmin' | 'vendeur' }) {
+  const { ready } = useStore()
+  if (!ready) return <Splash />
+  return role === 'superadmin' ? <AdminRouter /> : <VendeurRouter />
+}
+
+function AdminRouter() {
+  const [view, setView] = useState<'hub' | HubDest | 'sales'>('hub')
+
+  return (
+    <AnimatePresence mode="wait">
+      {view === 'hub' && (
+        <motion.div key="hub" {...fade}>
+          <Hub onNavigate={(d) => setView(d)} />
         </motion.div>
       )}
-
       {view === 'marketing' && (
         <motion.div key="marketing" {...fade}>
-          <MarketingDashboard onExit={() => setView('landing')} />
+          <MarketingDashboard onExit={() => setView('hub')} />
         </motion.div>
       )}
-
       {view === 'vendeur' && (
         <motion.div key="vendeur" {...fade}>
-          <SalesBrowser
-            onExit={() => setView('landing')}
-            onLaunch={() => setView('sales')}
-          />
+          <SalesBrowser onExit={() => setView('hub')} onLaunch={() => setView('sales')} />
         </motion.div>
       )}
-
-      {view === 'sales' && (
-        <SalesMode key="sales" onExit={() => setView('vendeur')} />
+      {view === 'accounts' && (
+        <motion.div key="accounts" {...fade}>
+          <AccountManager onExit={() => setView('hub')} />
+        </motion.div>
       )}
+      {view === 'sales' && <SalesMode key="sales" onExit={() => setView('vendeur')} />}
+    </AnimatePresence>
+  )
+}
+
+function VendeurRouter() {
+  const { logout } = useAuth()
+  const [view, setView] = useState<'browser' | 'sales'>('browser')
+
+  return (
+    <AnimatePresence mode="wait">
+      {view === 'browser' && (
+        <motion.div key="browser" {...fade}>
+          <SalesBrowser account onExit={() => logout()} onLaunch={() => setView('sales')} />
+        </motion.div>
+      )}
+      {view === 'sales' && <SalesMode key="sales" onExit={() => setView('browser')} />}
     </AnimatePresence>
   )
 }
@@ -124,8 +170,8 @@ function Splash() {
 
 export default function App() {
   return (
-    <StoreProvider>
-      <Shell />
-    </StoreProvider>
+    <AuthProvider>
+      <AuthGate />
+    </AuthProvider>
   )
 }

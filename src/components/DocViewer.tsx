@@ -144,7 +144,11 @@ export default function DocViewer({ doc }: { doc: DocMeta }) {
       )
 
     case 'pdf': {
-      const src = isBlob
+      // Same-origin / server-served PDFs render natively in the iframe (works
+      // offline on the intranet). Only fall back to the Google viewer for
+      // genuinely external URLs (needs internet — unused on a closed LAN).
+      const served = isBlob || url.startsWith('/') || url.startsWith(window.location.origin)
+      const src = served
         ? `${url}#toolbar=0&navpanes=0`
         : `https://docs.google.com/viewer?url=${encodeURIComponent(url)}&embedded=true`
       return <FrameView src={src} title={doc.title} white />

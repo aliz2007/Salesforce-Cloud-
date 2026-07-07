@@ -6,15 +6,20 @@
   "description": "Plateforme de partage et de présentation de documents pour MG Maroc — Marketing dépose, Vendeur présente.",
   "scripts": {
     "dev": "vite",
+    "server": "node server/index.js",
     "build": "tsc --noEmit && vite build",
+    "start": "npm run build && node server/index.js",
     "preview": "vite preview",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
     "clsx": "^2.1.1",
+    "cookie-parser": "^1.4.7",
+    "express": "^4.21.2",
     "framer-motion": "^11.3.19",
     "idb": "^8.0.0",
     "lucide-react": "^0.408.0",
+    "multer": "^1.4.5-lts.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
