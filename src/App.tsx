@@ -9,6 +9,7 @@ import MarketingDashboard from './components/MarketingDashboard'
 import SalesBrowser from './components/SalesBrowser'
 import SalesMode from './components/SalesMode'
 import AccountManager from './components/AccountManager'
+import TcoSimulator from './components/TcoSimulator'
 import { MgBadge } from './components/Brand'
 import { EASE } from './motion'
 
@@ -79,6 +80,11 @@ function AdminRouter() {
       {view === 'accounts' && (
         <motion.div key="accounts" {...fade}>
           <AccountManager onExit={() => setView('hub')} />
+        </motion.div>
+      )}
+      {view === 'tco' && (
+        <motion.div key="tco" {...fade}>
+          <TcoSimulator onExit={() => setView('hub')} />
         </motion.div>
       )}
       {view === 'sales' && <SalesMode key="sales" onExit={() => setView('vendeur')} />}

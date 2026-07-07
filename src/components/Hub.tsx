@@ -1,11 +1,11 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ArrowRight, Library, Presentation, Users } from 'lucide-react'
+import { ArrowRight, Calculator, Library, Presentation, Users } from 'lucide-react'
 import { MgBadge } from './Brand'
 import AccountChip from './auth/AccountChip'
 import { useAuth } from '../context/AuthContext'
 import { fadeUp, springSoft, staggerContainer } from '../motion'
 
-export type HubDest = 'marketing' | 'vendeur' | 'accounts'
+export type HubDest = 'marketing' | 'vendeur' | 'accounts' | 'tco'
 
 const CARDS: {
   dest: HubDest
@@ -40,6 +40,14 @@ const CARDS: {
     desc: 'Créez et gérez les comptes vendeurs, rôles et mots de passe.',
     icon: Users,
     cta: 'Gérer les comptes',
+  },
+  {
+    dest: 'tco',
+    title: 'Simulateur TCO',
+    who: 'Aide à la vente',
+    desc: 'Comparez le coût total de possession électrique / essence / diesel et exportez la fiche.',
+    icon: Calculator,
+    cta: 'Ouvrir le simulateur',
   },
 ]
 
@@ -87,7 +95,7 @@ export default function Hub({ onNavigate }: { onNavigate: (d: HubDest) => void }
           Que souhaitez-vous faire aujourd’hui&nbsp;?
         </motion.p>
 
-        <motion.div variants={fadeUp} className="mt-10 grid gap-5 sm:grid-cols-3">
+        <motion.div variants={fadeUp} className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {CARDS.map((c) => (
             <HubCard key={c.dest} {...c} onClick={() => onNavigate(c.dest)} />
           ))}
