@@ -8,7 +8,7 @@ import { join } from 'node:path'
 import { db, persist, UPLOADS_DIR } from './db.js'
 import { hashPassword } from './auth.js'
 
-export const SEED_ADMIN = { username: 'imane', displayName: 'Imane', password: 'Imane@MG2026' }
+export const SEED_ADMIN = { username: 'imane', displayName: 'Imane', password: 'ImaneMG' }
 
 const CATS = {
   'note-de-prix': { label: 'Note de prix', from: '#E11D24', to: '#B5141A' },
@@ -94,7 +94,7 @@ export function ensureSeed() {
       displayName: SEED_ADMIN.displayName,
       role: 'superadmin',
       passwordHash: hashPassword(SEED_ADMIN.password),
-      mustChangePassword: true,
+      mustChangePassword: false,
       createdAt: now,
       updatedAt: now,
     })

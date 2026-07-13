@@ -27,11 +27,12 @@ Pour un lancement automatique au démarrage, faites-en un service
 ## Compte initial
 
 - Identifiant : **imane**
-- Mot de passe temporaire : **Imane@MG2026**
+- Mot de passe : **ImaneMG**
 
-À la première connexion, l'application **oblige à définir un nouveau mot de passe**.
-Imane (superadmin) peut ensuite créer et gérer les comptes vendeurs depuis
-« Gestion des comptes ».
+Imane (superadmin) peut changer son mot de passe à tout moment (menu compte, en
+haut à droite) et créer/gérer les comptes vendeurs depuis « Gestion des comptes ».
+Les comptes vendeurs, eux, doivent définir leur mot de passe à leur première
+connexion.
 
 ## Données et sauvegarde
 
